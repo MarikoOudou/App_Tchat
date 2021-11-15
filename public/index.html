@@ -21,8 +21,8 @@
       
           <!-- Login Form -->
           <form action="chat.html">
-            <input type="text" class="form-control fadeIn second" name="login" placeholder="Nom d'utilisateur">
-            <input type="text" style="display: none;" id="newroom" class="form-control fadeIn second" name="room" disabled placeholder="Nom de la salle">
+            <input type="text" class="form-control fadeIn second" id="username" name="login" placeholder="Nom d'utilisateur" required>
+            <input type="text" style="display: none;" id="newroom" class="form-control fadeIn second" name="room" disabled placeholder="Nom de la salle" required>
             
               <select class="form-control fadeIn second" name="room" id="room">
                 <option value="Salle 1" selected>Salle 1</option>
@@ -31,7 +31,7 @@
                 <option value="creer">Creer son salle</option>
               </select>
 
-             <input type="submit" class="fadeIn fourth" value="Log In">
+             <input type="submit" id="sendForm" class="fadeIn fourth" value="Log In">
           </form>
       
           <!-- Remind Passowrd -->
@@ -46,7 +46,8 @@
       <script>
           $(function() {
               var socket = io().connect('http://loclhost:3000');
-              console.log("socket: ", socket) 
+            // $('#sendForm').prop('disabled', true);
+            console.log("socket: ", socket) 
               users = []
               rooms = []
               room = {}
@@ -55,18 +56,63 @@
               socket.on("sendRooms", (addRooms)=> {
                 console.log("rooms", addRooms)
                 rooms = addRooms
+
+                addRooms.forEach(addRoom => {
+                  listroom = '<option value="' +addRoom.value+'">'+addRoom.name+'</option>'
+                  $('#room').append(listroom)
+                })
+                
               })
 
-              socket.emit("addroom", {
+              /*socket.emit("addroom", {
                 value: "Salle 4",
                 name: "Salle 4"
+            })*/
+
+            /*document.getElementById('sendForm').addEventListener('submit', (e) => {
+              e.preventDefault();
+              console.log('e', e)
+
+            })*/
+            $('#username').change((username)=> {
+              console.log("username", username.target.value)
+              if (username.target.value) {
+                $('#sendForm').prop('disabled', false);
+              }
             })
+
+            $('#sendForm').click((data)=> {
+              
+                newroom = $('#newroom').val()
+                if (newroom) {
+                  socket.emit("addroom", {
+                    value: newroom,
+                    name: newroom
+                })
+                }
+              
+            })
+            
+            function addRoomMethode() {
+              $('#newroom').val()
+                console.log('click', $('#newroom').val())
+                /*if (data.target.value) {
+                  socket.emit("addroom", {
+                    value: "Salle 4",
+                    name: "Salle 4"
+                })
+                }*/
+                  
+              
+            }
+
 
               $('#room').change(function(value) {
                 console.log('value: ', value.target.value)
                 if (value.target.value == "creer") {
                   $('#newroom').css('display', 'initial')
                   $('#newroom').prop('disabled', false);
+
                 } else {
                   $('#newroom').css('display', 'none')
                   $('#newroom').prop('disabled', true);
