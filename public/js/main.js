@@ -1,5 +1,6 @@
 const chatForm = document.getElementById('chat-form');
-const chatMessages = document.querySelector('.chat-messages');
+const chatMessages = document.querySelector('.message');
+const userperso = document.getElementById('userperso');
 const roomName = document.getElementById('room-name');
 const conversation = document.getElementById('conversation');
 const userList = document.getElementById('users');
@@ -24,8 +25,11 @@ socket.emit('joinRoom', { username, room });
 // Get room and users
 socket.on('roomUsers', ({ room, users }) => {
   outputUserOnline(username);
-  outputRoomName(room);
-  outputUsers(users);
+  outputRoomName(this.room);
+  if (this.room != room) {
+  } else {
+    outputUsers(users);
+  }
 });
 
 // Message from server
@@ -34,7 +38,7 @@ socket.on('message', (message) => {
   outputMessage(message);
 
   // Scroll down
-  //chatMessages.scrollTop = chatMessages.scrollHeight;
+  conversation.scrollTop = conversation.scrollHeight;
 });
 
 // Message submit
@@ -110,6 +114,13 @@ function outputUserOnline(username) {
 
 // Add users to DOM
 function outputUsers(users) {
+  listusers = []
+  users.find((user)=> {
+    if (user.username != this.username) {
+      listusers.push(user)
+    }
+  })
+  console.log(listusers)
   /*userList.innerHTML = '';
   users.forEach((user) => {
     listsUsersRoomHtml = '<div class="row sideBar-body user"><div class="col-sm-3 col-xs-3 sideBar-avatar"> <div class="avatar-icon"><img src="https://bootdey.com/img/Content/avatar/avatar1.png"></div></div><div class="col-sm-9 col-xs-9 sideBar-main"><div class="row"><div class="col-sm-8 col-xs-8 sideBar-name"><span class="name-meta">' + 
@@ -120,14 +131,51 @@ function outputUsers(users) {
   });*/
   $('.user').remove();
 
-  users.forEach(user => {
+  listusers.forEach(user => {
     // $( "div" ).remove( ".hello" );
 
     listsUsersRoomHtml = '<div class="row sideBar-body user"><div class="col-sm-3 col-xs-3 sideBar-avatar"> <div class="avatar-icon"><img src="https://bootdey.com/img/Content/avatar/avatar1.png"></div></div><div class="col-sm-9 col-xs-9 sideBar-main"><div class="row"><div class="col-sm-8 col-xs-8 sideBar-name"><span class="name-meta">' + 
-      user.username + ' </span></div><div class="col-sm-4 col-xs-4 pull-right sideBar-time"><span class="time-meta pull-right">18:18</span></div></div></div></div>';
+      user.username + ' </span></div><div class="col-sm-4 col-xs-4 pull-right sideBar-time"><span class="time-meta pull-right">'+
+      '</span></div></div></div></div>';
       $('#usersRoom').append(listsUsersRoomHtml);
   });
+  if (room == "individuel") {
+    $('.user').click((i)=> {
+      console.log(i.target.innerText)
+      if (i.target.innerText) {
+        // userperso
+        userperso.innerText = i.target.innerText
+        socket.emit('individuelRoom', {
+          username1: username,
+          username2: i.target.innerText ,
+          room     : room + '_' + i.target.innerText 
+        });
+
+      }
+    })
+  }
+
+
 }
+
+socket.on('individuelRoom', (data)=> {
+  console.log('individuelRoom', data)
+  // const leaveRoom = confirm('VOus voulez accepter l\'invitation ?');
+
+  if (data.reception == username) {
+    const leaveRoom = confirm('VOus voulez accepter l\'invitation ?');
+    if (leaveRoom) {
+      console.log(leaveRoom)
+      userperso.innerText = data.demandeur
+
+      socket.emit('acceptioninvi', {
+        username,
+        room: data.room
+      })
+    }
+  }
+
+})
 
 //Prompt the user before leave chat room
 document.getElementById('leave-btn').addEventListener('click', () => {

@@ -29,17 +29,18 @@
         <div class="col-sm-4 side">
           <div class="side-one">
             <div class="row heading">
-              <div class="col-sm-3 col-xs-3 heading-avatar">
+              <div class="col-sm-5 col-xs-5 heading-avatar">
                 <div class="heading-avatar-icon" id="room-name">
-                  <!--<img src="https://bootdey.com/img/Content/avatar/avatar1.png">-->
                 </div>
               </div>
-               <!--<div class="col-sm-1 col-xs-1  heading-dot  pull-right">
-                <i class="fa fa-sign-out fa-2x  pull-right" aria-hidden="true"></i>
+               <div class="col-sm-3 col-xs-3  heading-dot">
+                <div class="heading-avatar-icon" style="margin: auto; text-align: end;">
+                  <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                </div>
               </div>
-              <div class="col-sm-2 col-xs-2 heading-compose  pull-right">
-                <i class="fa fa-comments fa-2x  pull-right" aria-hidden="true"></i>
-              </div>-->
+              <div class="col-sm-3 col-xs-3 heading-compose" style="margin: auto; text-align: end;" id="username">
+                Test
+              </div>
             </div>
 
             <!--<div class="row searchBox">
@@ -298,11 +299,11 @@
           <div class="row heading">
             <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
               <div class="heading-avatar-icon">
-                <img src="https://bootdey.com/img/Content/avatar/avatar6.png">
+                <img src="https://bootdey.com/img/Content/avatar/avatar4.png">
               </div>
             </div>
             <div class="col-sm-8 col-xs-7 heading-name">
-              <a class="heading-name-meta" id="username">John Doe
+              <a class="heading-name-meta" id="userperso">
               </a>
               <span class="heading-online">Online</span>
             </div>
@@ -1039,6 +1040,9 @@
   <script src="js/main.js"></script>
   <script>
     $(function () {
+      $('.sideBar-body > .user').click((data)=> {
+        console.log('click', data)
+    })
       /*var socket = io().connect('http://loclhost:3000');
       console.log("socket: ", socket) 
       listsUsersRoomHtml = '<div class="row sideBar-body"><div class="col-sm-3 col-xs-3 sideBar-avatar"> <div class="avatar-icon"><img src="https://bootdey.com/img/Content/avatar/avatar1.png"></div></div><div class="col-sm-9 col-xs-9 sideBar-main"><div class="row"><div class="col-sm-8 col-xs-8 sideBar-name"><span class="name-meta">' + 

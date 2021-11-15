@@ -7,7 +7,10 @@ const {
   userJoin,
   getCurrentUser,
   userLeave,
-  getRoomUsers
+  getRoomUsers,
+  getUsers,
+  findByName,
+  updateRoom
 } = require('./utils/users');
 
 const port = 3000
@@ -28,14 +31,23 @@ rooms = [
         value: "Salle 3",
         name: "Salle 3"
     },
+    {
+      value: "creer",
+      name: "Creer son salle"
+    },
+   /* {
+      value: "individuel",
+      name: "Causer avec une personne"
+    },*/
 ]
 
 io.on('connection', socket => {
     // console.log('connection du client ------------------------', socket.client.id)
 
     socket.on('joinRoom', ({ username, room }) => {
+        newusers = false
         const user = userJoin(socket.id, username, room);
-        console.log({ username, room })
+        // console.log('new user', { username, room })
         socket.join(user.room);
     
         // Welcome current user
@@ -49,11 +61,22 @@ io.on('connection', socket => {
             formatMessage(botName, `${user.username} has joined the chat`)
           );*/
     
+
+
+        if (room == "individuel" ) {
+          // getUsers
+          io.emit('roomUsers', {
+            room: user.room,
+            users: getUsers()
+          });
+        } else {
         // Send users and room info
         io.to(user.room).emit('roomUsers', {
           room: user.room,
           users: getRoomUsers(user.room)
         });
+        }
+
       });
 
       
@@ -63,6 +86,35 @@ io.on('connection', socket => {
 
     io.to(user.room).emit('message', formatMessage(user.username, msg));
   });
+
+    // Listen for chatMessage
+    socket.on('individuelRoom', (roomind) => {
+
+      const user1 = findByName(roomind.username1)
+      user1.room = roomind.room
+      user1.id = socket.id
+      updateRoom(user1)
+      socket.on('joinRoom').join(user1.room);
+      io.emit('individuelRoom', {
+        demandeur: roomind.username1,
+        reception: roomind.username2,
+        roomindivi: roomind.room
+      })
+      console.log(getUsers())
+    });
+
+    socket.on('acceptioninvi', (data)=> {
+      const user1 = findByName(data.username)
+      user1.room = data.room
+      user1.id = socket.id
+      updateRoom(user1)
+      socket.join(user1.room);
+// Send users and room info
+    /*io.to(user1.room).emit('roomUsers', {
+      room: user1.room,
+      users: getRoomUsers(user1.room)
+    });*/
+    })
 
 
   // Runs when client disconnects
